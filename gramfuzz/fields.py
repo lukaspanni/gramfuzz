@@ -297,22 +297,22 @@ class UFloat(Float):
         (0.10,    [1000.0, 100000.0]),
     ]
 
-class String(UInt):
+class String(Field):
     """Defines a string field
     """
     min = 0
     max = 0x100
 
     odds = [
-        (0.85,    [0,20]),
-        (0.10,    1),
-        (0.025,    0),
-        (0.025,    [20,100]),
+        (0.85, [0, 20]),
+        (0.10, 1),
+        (0.025, 0),
+        (0.025, [20, 100]),
     ]
     """Unlike numeric ``Field`` types, the odds value for the ``String`` field
     defines the *length* of the field, not characters used in the string.
 
-    See the :any:`gramfuzz.fields.Field.odds` member for details on the format of the ``odds`` probability
+    See the :any:`gramfuzz_fix.fields.Field.odds` member for details on the format of the ``odds`` probability
     list.
     """
 
@@ -356,8 +356,15 @@ class String(UInt):
         :param int max: The maximum size of the String when built
         :param str charset: The character-set to be used when building the string
         """
-        super(String, self).__init__(value, **kwargs)
 
+        if "min" in kwargs or "max" in kwargs:
+            self.odds = []
+
+        self.min = kwargs.setdefault("min", self.min)
+        self.max = kwargs.setdefault("max", self.max)
+        self.odds = kwargs.setdefault("odds", self.odds)
+
+        self.value = value
         self.charset = binstr(kwargs.setdefault("charset", self.charset))
 
     def build(self, pre=None, shortest=False):
@@ -372,7 +379,7 @@ class String(UInt):
         if self.value is not None and rand.maybe():
             return utils.val(self.value, pre, shortest=shortest)
 
-        length = super(String, self).build(pre, shortest=shortest)
+        length = self._odds_val()
         res = rand.data(length, self.charset)
         return res
 
