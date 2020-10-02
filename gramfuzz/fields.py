@@ -312,7 +312,7 @@ class String(Field):
     """Unlike numeric ``Field`` types, the odds value for the ``String`` field
     defines the *length* of the field, not characters used in the string.
 
-    See the :any:`gramfuzz_fix.fields.Field.odds` member for details on the format of the ``odds`` probability
+    See the :any:`gramfuzz.fields.Field.odds` member for details on the format of the ``odds`` probability
     list.
     """
 
